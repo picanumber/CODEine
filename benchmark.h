@@ -6,7 +6,10 @@
 #include <vector>
 #include <string>
 #include <chrono>
+#include <cstddef>
+#include <utility>
 #include <fstream>
+#include <numeric>
 #include <iostream>
 #include <algorithm>
 #include <type_traits>
@@ -19,11 +22,17 @@ namespace bmk
 	using std::string;
 	using std::size_t; 
 	using std::ostream; 
+	using std::is_same; 
+	using std::forward; 
 	using std::ofstream; 
+	using std::enable_if; 
 	using std::unique_ptr; 
+	using std::result_of_t; 
 	using std::make_unique; 
 	using std::initializer_list; 
 	using std::remove_reference; 
+	using std::integral_constant;
+	using std::chrono::time_point; 
 	using std::chrono::duration_cast; 
 
 	/// folly function to avoid optimizing code away 
@@ -60,6 +69,29 @@ namespace bmk
 	template<          > string time_type<std::chrono::minutes     >() { return "minutes";      }
 	template<          > string time_type<std::chrono::hours       >() { return "hours";        }
 
+	template<class TimeT=std::chrono::milliseconds, class ClockT=std::chrono::steady_clock>
+	class timeout
+	{
+		TimeT _total{ 0 };
+		decltype(ClockT::now()) _start;
+	public:
+		void tic()
+		{
+			_start = ClockT::now();
+		}
+		void toc()
+		{
+			_total += duration_cast<TimeT>(ClockT::now() - _start);
+		}
+		TimeT duration() const
+		{
+			return _total;
+		}
+	};
+
+	template<class TimeT = std::chrono::milliseconds, class ClockT = std::chrono::steady_clock>
+	using timeout_ptr = unique_ptr < timeout < TimeT, ClockT > > ; 
+
 	namespace detail
 	{
 		/**
@@ -69,8 +101,8 @@ namespace bmk
 		template<class TimeT, class FactorT>
 		struct experiment_impl
 		{
-			string                           _fctName; 
-			map<FactorT, std::vector<TimeT>> _timings;
+			string                      _fctName; 
+			map<FactorT, vector<TimeT>> _timings;
 		
 			experiment_impl(string const& factorName)
 				: _fctName(factorName)
@@ -148,6 +180,52 @@ namespace bmk
 			virtual void print(ostream& os) const = 0;
 		};
 
+		template<class TimeT, class ClockT>
+		struct measure
+		{
+			template<class F>
+			inline static auto duration(F callable)
+				-> typename enable_if < !is_same <
+				decltype(callable()), timeout_ptr<TimeT, ClockT>>::value, TimeT > ::type
+			{
+				auto start = ClockT::now();
+				callable();
+				return duration_cast<TimeT>(ClockT::now() - start);
+			}
+
+			template<class F>
+			inline static auto duration(F callable)
+				-> typename enable_if < is_same < 
+				decltype(callable()), timeout_ptr<TimeT, ClockT> >::value, TimeT > ::type
+			{
+				auto start = ClockT::now();
+				auto tOut  = callable();
+				return (duration_cast<TimeT>(ClockT::now() - start)) - tOut->duration();
+			}
+
+			template<class F, typename FactorT>
+			inline static auto duration(F callable, FactorT&& factor)
+				-> typename enable_if < !is_same < 
+				decltype(callable(forward<FactorT>(factor))), timeout_ptr<TimeT, ClockT>
+				>::value, TimeT >::type
+			{
+				auto start = ClockT::now();
+				callable(forward<FactorT>(factor));
+				return duration_cast<TimeT>(ClockT::now() - start);
+			}
+
+			template<class F, typename FactorT>
+			inline static auto duration(F callable, FactorT&& factor)
+				-> typename enable_if < is_same < 
+				decltype(callable(forward<FactorT>(factor))), timeout_ptr<TimeT, ClockT>
+				>::value, TimeT >::type
+			{
+				auto start = ClockT::now();
+				auto tOut  = callable(forward<FactorT>(factor));
+				return (duration_cast<TimeT>(ClockT::now() - start)) - tOut->duration();
+			}
+		};
+
 		/**
 		* @ class experiment_model
 		* @ brief abrastraction for a single sampling process
@@ -166,10 +244,8 @@ namespace bmk
 			{
 				for (size_t i = 0; i < nSample; i++)
 				{
-					auto start = ClockT::now();
-					callable();
-					auto duration = duration_cast<TimeT>(ClockT::now() - start);
-					experiment_impl<TimeT, FactorT>::_timings[i] = duration;
+					experiment_impl<TimeT, FactorT>::_timings[i] = measure<TimeT, ClockT>
+						::duration(callable);
 				}
 			}
 
@@ -179,15 +255,13 @@ namespace bmk
 				string const& factorName, initializer_list<FactorT>&& factors)
 				: experiment_impl<TimeT, FactorT>(factorName)
 			{
-				for (auto& factor : factors)
+				for (auto&& factor : factors)
 				{
 					experiment_impl<TimeT, FactorT>::_timings[factor].reserve(nSample);
 					for (size_t i = 0; i < nSample; i++)
 					{
-						auto start = ClockT::now();
-						callable(factor);
-						auto duration = duration_cast<TimeT>(ClockT::now() - start);
-						experiment_impl<TimeT, FactorT>::_timings[factor].push_back(duration);
+						experiment_impl<TimeT, FactorT>::_timings[factor].push_back(
+							measure<TimeT, ClockT>::duration(callable, factor));
 					}
 				}
 			}
@@ -202,10 +276,8 @@ namespace bmk
 					experiment_impl<TimeT, FactorT>::_timings[*beg].reserve(nSample);
 					for (size_t i = 0; i < nSample; i++)
 					{
-						auto start = ClockT::now();
-						callable(*beg);
-						auto duration = duration_cast<TimeT>(ClockT::now() - start);
-						experiment_impl<TimeT, FactorT>::_timings[*beg].push_back(duration);
+						experiment_impl<TimeT, FactorT>::_timings[*beg].push_back(
+							measure<TimeT, ClockT>::duration(callable, *beg));
 					}
 					++beg;
 				}
@@ -250,7 +322,7 @@ namespace bmk
 			string const& factorName, initializer_list<FactorT>&& factors)
 		{
 			_data[name] = make_unique<detail::experiment_model<TimeT, ClockT, FactorT>>(
-				nSample, callable, factorName, std::forward<initializer_list<FactorT>&&>(factors));
+				nSample, callable, factorName, forward<initializer_list<FactorT>&&>(factors));
 		}
 
 		template<class F, class It>
@@ -264,11 +336,12 @@ namespace bmk
 		}
 
 		// utilities ----------------------------------------------------
-		void print(ostream& os) const
+		void print(const char* benchmarkName, ostream& os) const
 		{
 			for (auto const& Pair : _data)
 			{
-				os << "{ 'experiment_name' : '" << Pair.first << "'"; 
+				os << "{ 'benchmark_name' : '" << benchmarkName << "'";
+				os << ", 'experiment_name' : '" << Pair.first << "'";
 				os << ", 'time_type' : '" << time_type<TimeT>() << "'";
 				Pair.second->print(os);
 				os << " } \n";
@@ -276,14 +349,15 @@ namespace bmk
 		}
 
 		void serialize(
-			const char *filename, 
-			std::ios_base::openmode mode = ofstream::out | ofstream::app) const
+			const char* benchmarkName, const char *filename,
+			std::ios_base::openmode mode = ofstream::out) const
 		{
 			ofstream os;
 			os.open(filename, mode);
 			for (auto const& Pair : _data)
 			{
-				os << "{ 'experiment_name' : '" << Pair.first << "'";
+				os << "{ 'benchmark_name' : '" << benchmarkName << "'";
+				os << ", 'experiment_name' : '" << Pair.first << "'";
 				os << ", 'time_type' : '" << time_type<TimeT>() << "'";
 				Pair.second->print(os);
 				os << " } \n";
