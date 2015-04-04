@@ -18,6 +18,7 @@ namespace bmk
 {
 
 	using std::map; 
+	using std::pair;
 	using std::vector; 
 	using std::string;
 	using std::size_t; 
@@ -301,7 +302,7 @@ namespace bmk
 	>
 	class benchmark
 	{
-		map<string, unique_ptr<detail::experiment>> _data; 
+		vector<pair<string, unique_ptr<detail::experiment>>> _data; 
 
 	public:
 		// construction - destruction -----------------------------------
@@ -312,8 +313,8 @@ namespace bmk
 		template<class F>
 		void run(string const& name, size_t nSample, F callable)
 		{
-			_data[name] = make_unique< 
-				detail::experiment_model<TimeT, ClockT>>(nSample, callable);
+			_data.emplace_back(name, make_unique< 
+				detail::experiment_model<TimeT, ClockT>>(nSample, callable));
 		}
 
 		template<class FactorT, class F>
@@ -321,8 +322,8 @@ namespace bmk
 			string const& name, size_t nSample, F callable, 
 			string const& factorName, initializer_list<FactorT>&& factors)
 		{
-			_data[name] = make_unique<detail::experiment_model<TimeT, ClockT, FactorT>>(
-				nSample, callable, factorName, forward<initializer_list<FactorT>&&>(factors));
+			_data.emplace_back(name, make_unique<detail::experiment_model<TimeT, ClockT, FactorT>>(
+				nSample, callable, factorName, forward<initializer_list<FactorT>&&>(factors)));
 		}
 
 		template<class F, class It>
@@ -330,15 +331,15 @@ namespace bmk
 			string const& name, size_t nSample, 
 			F callable, string const& factorName, It beg, It fin)
 		{
-			_data[name] = make_unique<detail::experiment_model<TimeT, ClockT, 
+			_data.emplace_back(name, make_unique<detail::experiment_model<TimeT, ClockT,
 				typename remove_reference<decltype(*beg)>::type>>(
-				nSample, callable, factorName, beg, fin);
+				nSample, callable, factorName, beg, fin));
 		}
 
 		// utilities ----------------------------------------------------
 		void print(const char* benchmarkName, ostream& os) const
 		{
-			for (auto const& Pair : _data)
+			for (auto&& Pair : _data)
 			{
 				os << "{ 'benchmark_name' : '" << benchmarkName << "'";
 				os << ", 'experiment_name' : '" << Pair.first << "'";
@@ -354,7 +355,7 @@ namespace bmk
 		{
 			ofstream os;
 			os.open(filename, mode);
-			for (auto const& Pair : _data)
+			for (auto&& Pair : _data)
 			{
 				os << "{ 'benchmark_name' : '" << benchmarkName << "'";
 				os << ", 'experiment_name' : '" << Pair.first << "'";
