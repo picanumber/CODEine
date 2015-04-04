@@ -5,8 +5,7 @@
 ----------------------------------------------------------
 Benchmark visualizer           
 ----------------------------------------------------------
-Utility to plot the output     
-produced by benchmark.h        
+Utility to plot the output produced by benchmark.h        
 ----------------------------------------------------------
 author         : Nikos Athanasiou
 last modified  : 04 / 04 / 2015  
