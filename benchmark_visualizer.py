@@ -125,7 +125,7 @@ def openwindows():
     if nam != '':
         plot_benchmark_file(nam)
 
-def main(): 
+def plot_benchmarks():
     root = Tk()
     myfiletypes = [('Python files', '*.py'), ('All files', '*')]
     open = tkFileDialog.Open(root, filetypes = myfiletypes)
@@ -134,6 +134,9 @@ def main():
     statusbar = Label(root, text="", bd=1, relief=SUNKEN, anchor=W)
     statusbar.pack(side=BOTTOM, fill=X)
     root.mainloop()
+
+def main(): 
+    plot_benchmarks()
 
 if __name__ == '__main__': 
     main()
