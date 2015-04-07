@@ -1,5 +1,5 @@
 # CODEine
-being a code junkie
+being a code junkie, the repository of a [blog](https://ngathanasiou.wordpress.com/)
 
 
 integer sequence
