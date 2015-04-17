@@ -62,13 +62,13 @@ namespace bmk
 	}
 
 	/// get the name of the chrono time type
-	template<typename T> string time_type()                            { return "unknown";      }
-	template<          > string time_type<std::chrono::nanoseconds >() { return "nanoseconds";  }
-	template<          > string time_type<std::chrono::microseconds>() { return "microseconds"; }
-	template<          > string time_type<std::chrono::milliseconds>() { return "milliseconds"; }
-	template<          > string time_type<std::chrono::seconds     >() { return "seconds";      }
-	template<          > string time_type<std::chrono::minutes     >() { return "minutes";      }
-	template<          > string time_type<std::chrono::hours       >() { return "hours";        }
+	template<typename T> inline string time_type()                            { return "unknown";      }
+	template<          > inline string time_type<std::chrono::nanoseconds >() { return "nanoseconds";  }
+	template<          > inline string time_type<std::chrono::microseconds>() { return "microseconds"; }
+	template<          > inline string time_type<std::chrono::milliseconds>() { return "milliseconds"; }
+	template<          > inline string time_type<std::chrono::seconds     >() { return "seconds";      }
+	template<          > inline string time_type<std::chrono::minutes     >() { return "minutes";      }
+	template<          > inline string time_type<std::chrono::hours       >() { return "hours";        }
 
 	template<class TimeT=std::chrono::milliseconds, class ClockT=std::chrono::steady_clock>
 	class timeout
