@@ -14,6 +14,8 @@
 #include <algorithm>
 #include <type_traits>
 
+#define fw(what) std::forward<decltype(what)>(what)
+
 namespace bmk
 {
 
@@ -70,8 +72,10 @@ namespace bmk
 	template<          > inline string time_type<std::chrono::minutes     >() { return "minutes";      }
 	template<          > inline string time_type<std::chrono::hours       >() { return "hours";        }
 
-	template<class TimeT=std::chrono::milliseconds, class ClockT=std::chrono::steady_clock>
-	class timeout
+	template < 
+		class TimeT  = std::chrono::milliseconds, 
+		class ClockT = std::chrono::steady_clock
+	> class timeout
 	{
 		TimeT _total{ 0 };
 		decltype(ClockT::now()) _start;
@@ -90,8 +94,10 @@ namespace bmk
 		}
 	};
 
-	template<class TimeT = std::chrono::milliseconds, class ClockT = std::chrono::steady_clock>
-	using timeout_ptr = unique_ptr < timeout < TimeT, ClockT > > ; 
+	template <
+		class TimeT  = std::chrono::milliseconds, 
+		class ClockT = std::chrono::steady_clock 
+	> using timeout_ptr = unique_ptr<timeout<TimeT, ClockT>> ; 
 
 	namespace detail
 	{
@@ -185,44 +191,44 @@ namespace bmk
 		struct measure
 		{
 			template<class F>
-			inline static auto duration(F callable)
+			inline static auto duration(F&& callable)
 				-> typename enable_if < !is_same <
 				decltype(callable()), timeout_ptr<TimeT, ClockT>>::value, TimeT > ::type
 			{
 				auto start = ClockT::now();
-				callable();
+				fw(callable)();
 				return duration_cast<TimeT>(ClockT::now() - start);
 			}
 
 			template<class F>
-			inline static auto duration(F callable)
+			inline static auto duration(F&& callable)
 				-> typename enable_if < is_same < 
 				decltype(callable()), timeout_ptr<TimeT, ClockT> >::value, TimeT > ::type
 			{
 				auto start = ClockT::now();
-				auto tOut  = callable();
+				auto tOut = fw(callable)();
 				return (duration_cast<TimeT>(ClockT::now() - start)) - tOut->duration();
 			}
 
 			template<class F, typename FactorT>
-			inline static auto duration(F callable, FactorT&& factor)
+			inline static auto duration(F&& callable, FactorT&& factor)
 				-> typename enable_if < !is_same < 
 				decltype(callable(forward<FactorT>(factor))), timeout_ptr<TimeT, ClockT>
 				>::value, TimeT >::type
 			{
 				auto start = ClockT::now();
-				callable(forward<FactorT>(factor));
+				fw(callable)(forward<FactorT>(factor));
 				return duration_cast<TimeT>(ClockT::now() - start);
 			}
 
 			template<class F, typename FactorT>
-			inline static auto duration(F callable, FactorT&& factor)
+			inline static auto duration(F&& callable, FactorT&& factor)
 				-> typename enable_if < is_same < 
 				decltype(callable(forward<FactorT>(factor))), timeout_ptr<TimeT, ClockT>
 				>::value, TimeT >::type
 			{
 				auto start = ClockT::now();
-				auto tOut  = callable(forward<FactorT>(factor));
+				auto tOut = fw(callable)(forward<FactorT>(factor));
 				return (duration_cast<TimeT>(ClockT::now() - start)) - tOut->duration();
 			}
 		};
@@ -240,19 +246,19 @@ namespace bmk
 		{
 			// construction - destruction -------------------------------
 			template<class F>
-			experiment_model(size_t nSample, F callable)
+			experiment_model(size_t nSample, F&& callable)
 				: experiment_impl<TimeT, void>(nSample)
 			{
 				for (size_t i = 0; i < nSample; i++)
 				{
 					experiment_impl<TimeT, FactorT>::_timings[i] = measure<TimeT, ClockT>
-						::duration(callable);
+						::duration(fw(callable));
 				}
 			}
 
 			template<class F>
 			experiment_model(
-				size_t nSample, F callable, 
+				size_t nSample, F&& callable, 
 				string const& factorName, initializer_list<FactorT>&& factors)
 				: experiment_impl<TimeT, FactorT>(factorName)
 			{
@@ -262,13 +268,13 @@ namespace bmk
 					for (size_t i = 0; i < nSample; i++)
 					{
 						experiment_impl<TimeT, FactorT>::_timings[factor].push_back(
-							measure<TimeT, ClockT>::duration(callable, factor));
+							measure<TimeT, ClockT>::duration(fw(callable), factor));
 					}
 				}
 			}
 
 			template<class F, class It>
-			experiment_model(size_t nSample, F callable, string const& factorName, It beg, It fin)
+			experiment_model(size_t nSample, F&& callable, string const& factorName, It beg, It fin)
 				: experiment_impl<
 					TimeT, typename remove_reference<decltype(*beg)>::type>(factorName)
 			{
@@ -278,7 +284,7 @@ namespace bmk
 					for (size_t i = 0; i < nSample; i++)
 					{
 						experiment_impl<TimeT, FactorT>::_timings[*beg].push_back(
-							measure<TimeT, ClockT>::duration(callable, *beg));
+							measure<TimeT, ClockT>::duration(fw(callable), *beg));
 					}
 					++beg;
 				}
@@ -298,7 +304,7 @@ namespace bmk
 	* @ brief organizes the execution and serialization of timing experiments
 	*/
 	template <
-		typename TimeT = std::chrono::milliseconds, class ClockT = std::chrono::steady_clock
+		class TimeT = std::chrono::milliseconds, class ClockT = std::chrono::steady_clock
 	>
 	class benchmark
 	{
@@ -311,29 +317,29 @@ namespace bmk
 
 		// run experiments ----------------------------------------------
 		template<class F>
-		void run(string const& name, size_t nSample, F callable)
+		void run(string const& name, size_t nSample, F&& callable)
 		{
 			_data.emplace_back(name, make_unique< 
-				detail::experiment_model<TimeT, ClockT>>(nSample, callable));
+				detail::experiment_model<TimeT, ClockT>>(nSample, fw(callable)));
 		}
 
 		template<class FactorT, class F>
 		void run(
-			string const& name, size_t nSample, F callable, 
+			string const& name, size_t nSample, F&& callable, 
 			string const& factorName, initializer_list<FactorT>&& factors)
 		{
 			_data.emplace_back(name, make_unique<detail::experiment_model<TimeT, ClockT, FactorT>>(
-				nSample, callable, factorName, forward<initializer_list<FactorT>&&>(factors)));
+				nSample, fw(callable), factorName, forward<initializer_list<FactorT>&&>(factors)));
 		}
 
 		template<class F, class It>
 		void run(
 			string const& name, size_t nSample, 
-			F callable, string const& factorName, It beg, It fin)
+			F&& callable, string const& factorName, It beg, It fin)
 		{
 			_data.emplace_back(name, make_unique<detail::experiment_model<TimeT, ClockT,
 				typename remove_reference<decltype(*beg)>::type>>(
-				nSample, callable, factorName, beg, fin));
+				nSample, fw(callable), factorName, beg, fin));
 		}
 
 		// utilities ----------------------------------------------------
@@ -368,6 +374,8 @@ namespace bmk
 	};
 
 } // ~ namespace bmk
+
+#undef fw
 
 #endif
 
