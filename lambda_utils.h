@@ -1,19 +1,42 @@
 #ifndef LAMBDA_UTILS_20_10_2015
 #define LAMBDA_UTILS_20_10_2015
 
+#include <type_traits>
+
 namespace lut
 {
 
-	template <class... F>
-	struct overload_set : F...
+	template<class... Fs>
+	struct overload_set
 	{
-		overload_set(F... f) : F(f)... {}
 	};
 
-	template <class... F>
-	auto overload(F... f)
+	template<class F0, class...Fs>
+	struct overload_set<F0, Fs...>
+		: F0, overload_set<Fs...>
 	{
-		return overload_set<F...>(f...);
+		overload_set(F0 f0, Fs... fs) :
+		F0(std::move(f0)),
+
+		overload_set<Fs...>(std::move(fs)...)
+		{
+		}
+
+		using F0::operator();
+		using overload_set<Fs...>::operator();
+	};
+
+	template<class F>
+	struct overload_set<F> : F
+	{
+		overload_set(F f) :F(std::move(f)){};
+		using F::operator();
+	};
+
+	template<class...Fs>
+	overload_set<typename std::decay<Fs>::type...> overload(Fs&&...fs)
+	{
+		return{ std::forward<Fs>(fs)... };
 	}
 
 	namespace detail
