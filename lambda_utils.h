@@ -56,7 +56,7 @@ namespace lut
 #define CONCATENATE(x, y) CONCATENATE_DETAIL(x, y)
 #define UNIQUE_IDEXPR(x) CONCATENATE(x, __COUNTER__)
 
-#define nocopy UNIQUE_IDEXPR(x) = lut::detail::NC()
+#define nocopy UNIQUE_IDEXPR(x___x) = lut::detail::NC()
 
 #undef CONCATENATE_DETAIL
 #undef CONCATENATE
