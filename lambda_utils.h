@@ -52,15 +52,9 @@ namespace lut
 
 } // ~ namespace lut
 
-#define CONCATENATE_DETAIL(x, y) x##y
-#define CONCATENATE(x, y) CONCATENATE_DETAIL(x, y)
-#define UNIQUE_IDEXPR(x) CONCATENATE(x, __COUNTER__)
-
-#define nocopy UNIQUE_IDEXPR(x___x) = lut::detail::NC()
-
-#undef CONCATENATE_DETAIL
-#undef CONCATENATE
-#undef UNIQUE_IDEXPR
+/// x___x will belong to the closure's scope
+/// so it'll be a unique expression across lambdas
+#define nocopy x___x = lut::detail::NC()
 
 #endif
 
