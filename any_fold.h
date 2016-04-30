@@ -12,13 +12,11 @@ namespace fld
 
 		template <class D>
 		constexpr XX(D&& data)
-			: data(std::forward<D>(data))
-		{ }
-
-		constexpr T give() const
+		    : data(std::forward<D>(data))
 		{
-			return data;
 		}
+
+		constexpr T give() const { return data; }
 	};
 
 	template <class L, class F, class R>
@@ -29,26 +27,23 @@ namespace fld
 
 		template <class LL, class RR>
 		constexpr YY(LL&& l, RR&& r)
-			: l(std::forward<LL>(l))
-			, r(std::forward<RR>(r))
-		{ }
-
-		constexpr auto give() const
+		    : l(std::forward<LL>(l)), r(std::forward<RR>(r))
 		{
-			return F{}(l.give(), r.give());
 		}
+
+		constexpr auto give() const { return F{}(l.give(), r.give()); }
 	};
 
 	template <class F, class R, class T>
 	constexpr auto operator+(XX<F, T> const& lhs, R const& rhs)
 	{
-		return YY< XX<F, T>, F, R >(lhs, rhs);
+		return YY<XX<F, T>, F, R>(lhs, rhs);
 	}
 
 	template <class F, class T1, class T2, class R>
 	constexpr auto operator+(YY<T1, F, T2> const& lhs, R const& rhs)
 	{
-		return YY< YY<T1, F, T2>, F, R >(lhs, rhs);
+		return YY<YY<T1, F, T2>, F, R>(lhs, rhs);
 	}
 
 	namespace detail
@@ -77,15 +72,8 @@ namespace fld
 	{
 		return detail::_foldr(XX<F, Ts>(args)...).give();
 	}
-
 }
 
 
 #endif
-
-
-
-
-
-
 
