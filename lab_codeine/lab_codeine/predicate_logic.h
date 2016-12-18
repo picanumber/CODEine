@@ -1,0 +1,4 @@
+#ifndef PREDICATE_LOGIC_H_18_12_16
+#define PREDICATE_LOGIC_H_18_12_16
+
+#endif
