@@ -1,12 +1,12 @@
-#include <iostream>
+#include <cstdlib>
 
-#include "predicate_logic.h"
+extern int predicate_logic(); 
 
 
 
 int main()
-{
-	std::cout << "dw\n"; 
-	int a; 
-	(void)a; 
+{   
+	predicate_logic(); 
+
+	system("PAUSE"); 
 }
