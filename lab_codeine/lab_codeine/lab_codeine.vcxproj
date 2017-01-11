@@ -116,9 +116,11 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="predicate_logic.cpp" />
+    <ClCompile Include="sorted_view.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="predicate_logic.h" />
+    <ClInclude Include="sorted_view.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
