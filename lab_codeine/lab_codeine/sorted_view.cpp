@@ -8,17 +8,17 @@
 
 /*    0     |     1      |       2       |     3      |     4     | 5 | 6  | 7 | 8 | 9  |
 |-----------+------------+---------------+------------+-----------+---+----+---+---+----|
-| Michael   | Phelps	 | United States | Swimming	  | 2004–2016 | M | 23 | 3 | 2 | 28 |
-| Larisa    | Latynina	 | Soviet Union	 | Gymnastics | 1956–1964 | F | 9  | 5 | 4 | 18 |
-| Paavo     | Nurmi	     | Finland	     | Athletics  | 1920–1928 | M | 9  | 3 | 0 | 12 |
-| Mark      | Spitz	     | United States | Swimming   | 1968–1972 | M | 9  | 1 | 1 | 11 |
-| Carl      | Lewis	     | United States | Athletics  | 1984–1996 | M | 9  | 1 | 0 | 10 |
-| Usain     | Bolt	     | Jamaica	     | Athletics  | 2008–2016 | M | 9  | 0 | 0 | 9  |
-| Ole Einar | Bjorndalen | Norway	     | Biathlon	  | 1998–2014 | M | 8  | 4 | 1 | 13 |
-| Bjorn     | Daehlie	 | Norway	     | C/c skiing | 1992–1998 | M | 8  | 4 | 0 | 12 |
-| Birgit    | Fischer	 | Germany	     | Canoeing   | 1980–2004 | F | 8  | 4 | 0 | 12 |
-| Sawao     | Kato	     | Japan	     | Gymnastics | 1968–1976 | M | 8  | 3 | 1 | 12 |
-| Jenny     | Thompson	 | United States | Swimming   | 1992–2004 | F | 8  | 3 | 1 | 12 */
+| Michael   | Phelps	 | United States | Swimming   | 2004â€“2016 | M | 23 | 3 | 2 | 28 |
+| Larisa    | Latynina	 | Soviet Union	 | Gymnastics | 1956â€“1964 | F | 9  | 5 | 4 | 18 |
+| Paavo     | Nurmi	 | Finland	 | Athletics  | 1920â€“1928 | M | 9  | 3 | 0 | 12 |
+| Mark      | Spitz      | United States | Swimming   | 1968â€“1972 | M | 9  | 1 | 1 | 11 |
+| Carl      | Lewis      | United States | Athletics  | 1984â€“1996 | M | 9  | 1 | 0 | 10 |
+| Usain     | Bolt       | Jamaica       | Athletics  | 2008â€“2016 | M | 9  | 0 | 0 | 9  |
+| Ole Einar | Bjorndalen | Norway        | Biathlon   | 1998â€“2014 | M | 8  | 4 | 1 | 13 |
+| Bjorn     | Daehlie	 | Norway        | C/c skiing | 1992â€“1998 | M | 8  | 4 | 0 | 12 |
+| Birgit    | Fischer	 | Germany       | Canoeing   | 1980â€“2004 | F | 8  | 4 | 0 | 12 |
+| Sawao     | Kato       | Japan         | Gymnastics | 1968â€“1976 | M | 8  | 3 | 1 | 12 |
+| Jenny     | Thompson	 | United States | Swimming   | 1992â€“2004 | F | 8  | 3 | 1 | 12 */
 
 using namespace std;
 
