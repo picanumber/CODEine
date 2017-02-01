@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 #include <chrono>
+#include <locale>
+#include <thread>
 #include <cstddef>
 #include <utility>
 #include <fstream>
@@ -14,7 +16,7 @@
 #include <algorithm>
 #include <type_traits>
 
-#define fw(what) std::forward<decltype(what)>(what)
+#define fw(...) ::std::forward<decltype(__VA_ARGS__)>(__VA_ARGS__)
 
 namespace bmk
 {
@@ -65,42 +67,99 @@ namespace bmk
 		       data.size();
 	}
 
+	namespace detail
+	{
+		using std::chrono::duration; 
+
+		template <class duration_t>
+		struct impl_time_t
+		{
+			static string apply() { return "unknown"; }
+		};
+
+		template <class Rep>
+		struct impl_time_t<duration<Rep, std::nano>>
+		{
+			static string apply() { return "nanoseconds"; }
+		}; 
+
+		template <class Rep>
+		struct impl_time_t<duration<Rep, std::micro>>
+		{
+			static string apply() { return "microseconds"; }
+		}; 
+
+		template <class Rep>
+		struct impl_time_t<duration<Rep, std::milli>>
+		{
+			static string apply() { return "milliseconds"; }
+		}; 
+
+		template <class Rep>
+		struct impl_time_t<duration<Rep>>
+		{
+			static string apply() { return "seconds"; }
+		}; 
+
+		template <class Rep>
+		struct impl_time_t<duration<Rep, std::ratio<60>>>
+		{
+			static string apply() { return "minutes"; }
+		}; 
+
+		template <class Rep>
+		struct impl_time_t<duration<Rep, std::ratio<3600>>>
+		{
+			static string apply() { return "hours"; }
+		}; 
+	}
+
 	/// get the name of the chrono time type
-	template <typename T>
+	template <class T>
 	inline string time_type()
 	{
-		return "unknown";
+		return detail::impl_time_t<T>::apply(); 
 	}
-	template <>
-	inline string time_type<std::chrono::nanoseconds>()
+
+	/**
+	* @struct ccleaner
+	* @brief  cache cleaner
+	* @detail Use the following sizes as reference:
+	*	L1 Data Cache        : 32 KB - 256 KB, Line Size 64
+	*	L1 Instruction Cache :          32 KB, Line Size 64
+	*	L2 Unified Cache     :   256 KB - 1MB, Line Size 64
+	*	L3 Unified Cache     :           6 MB, Line Size 64
+	*/
+	struct ccleaner
 	{
-		return "nanoseconds";
-	}
-	template <>
-	inline string time_type<std::chrono::microseconds>()
-	{
-		return "microseconds";
-	}
-	template <>
-	inline string time_type<std::chrono::milliseconds>()
-	{
-		return "milliseconds";
-	}
-	template <>
-	inline string time_type<std::chrono::seconds>()
-	{
-		return "seconds";
-	}
-	template <>
-	inline string time_type<std::chrono::minutes>()
-	{
-		return "minutes";
-	}
-	template <>
-	inline string time_type<std::chrono::hours>()
-	{
-		return "hours";
-	}
+		std::size_t _megs; // number of megabytes 
+		std::size_t _dumy; // dummy value to hinter optimization
+
+		explicit ccleaner(std::size_t megs = 20)
+			: _megs(megs)
+			, _dumy(0)
+		{}
+
+		std::size_t operator()()
+		{
+			const std::size_t size = _megs * 1024 * 1024;
+			char *c = (char *)malloc(size);
+			memset(c, 1 * ((int)_megs), size);
+
+			for (std::size_t j = 0; j < size; j++)
+				_dumy += (c[j] + _megs);
+
+			free(c);
+			return _dumy;
+		}
+
+		std::size_t rest()
+		{
+			std::size_t ret = _dumy; 
+			std::this_thread::sleep_for(std::chrono::milliseconds{ _megs }); 
+			return ((_dumy = 0), ret); 
+		}
+	};
 
 	template <class TimeT  = std::chrono::milliseconds,
 	          class ClockT = std::chrono::steady_clock>
@@ -262,6 +321,8 @@ namespace bmk
 		struct experiment_model final : experiment,
 		                                experiment_impl<TimeT, FactorT>
 		{
+			ccleaner cache_cleaner; 
+
 			// construction - destruction -------------------------------
 			template <class F>
 			experiment_model(size_t nSample, F&& callable)
@@ -269,8 +330,12 @@ namespace bmk
 			{
 				for (size_t i = 0; i < nSample; i++)
 				{
+					cache_cleaner(); 
+
 					experiment_impl<TimeT, FactorT>::_timings[i] =
 					    measure<TimeT, ClockT>::duration(fw(callable));
+					
+					cache_cleaner.rest();
 				}
 			}
 
@@ -282,13 +347,16 @@ namespace bmk
 			{
 				for (auto&& factor : factors)
 				{
-					experiment_impl<TimeT, FactorT>::_timings[factor].reserve(
-					    nSample);
+					experiment_impl<TimeT, FactorT>::_timings[factor].reserve(nSample);
 					for (size_t i = 0; i < nSample; i++)
 					{
+						cache_cleaner();
+
 						experiment_impl<TimeT, FactorT>::_timings[factor]
 						    .push_back(measure<TimeT, ClockT>::duration(
 						        fw(callable), factor));
+						
+						cache_cleaner.rest();
 					}
 				}
 			}
@@ -302,13 +370,16 @@ namespace bmk
 			{
 				while (beg != fin)
 				{
-					experiment_impl<TimeT, FactorT>::_timings[*beg].reserve(
-					    nSample);
+					experiment_impl<TimeT, FactorT>::_timings[*beg].reserve(nSample);
 					for (size_t i = 0; i < nSample; i++)
 					{
+						cache_cleaner();
+					
 						experiment_impl<TimeT, FactorT>::_timings[*beg]
 						    .push_back(measure<TimeT, ClockT>::duration(
 						        fw(callable), *beg));
+
+						cache_cleaner.rest();
 					}
 					++beg;
 				}
@@ -333,6 +404,8 @@ namespace bmk
 		vector<pair<string, unique_ptr<detail::experiment>>> _data;
 
 	public:
+		using time_t = TimeT; 
+		using clock_t = ClockT; 
 		// construction - destruction -----------------------------------
 		benchmark() = default;
 		benchmark(benchmark const&) = delete;
@@ -381,10 +454,13 @@ namespace bmk
 			}
 		}
 
-		void serialize(const char* benchmarkName, const char* filename,
-		               std::ios_base::openmode mode = ofstream::out) const
+		void serialize(
+			const char* benchmarkName, const char* filename,
+			std::ios_base::openmode mode = ofstream::out, 
+			std::locale punct = std::locale::classic()) const
 		{
 			ofstream os;
+			os.imbue(punct); 
 			os.open(filename, mode);
 			for (auto&& Pair : _data)
 			{
