@@ -46,7 +46,7 @@ namespace bmk
 	template <class T>
 	void doNotOptimizeAway(T&& datum)
 	{
-		datum = datum;
+		(void)datum;
 	}
 #pragma optimize("", on)
 #else
