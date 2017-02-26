@@ -41,7 +41,7 @@ namespace bmk
 	using std::chrono::duration_cast;
 
 /// folly function to avoid optimizing code away
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(__clang__)
 #pragma optimize("", off)
 	template <class T>
 	void doNotOptimizeAway(T&& datum)
