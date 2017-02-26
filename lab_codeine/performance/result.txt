@@ -1,0 +1,2 @@
+{ 'benchmark_name' : 'words from file', 'experiment_name' : 'push_back', 'time_type' : 'milliseconds', 'timings' : [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] } 
+{ 'benchmark_name' : 'words from file', 'experiment_name' : 'insert it', 'time_type' : 'milliseconds', 'timings' : [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] } 

@@ -333,6 +333,9 @@ namespace bmk
 		vector<pair<string, unique_ptr<detail::experiment>>> _data;
 
 	public:
+		// typedefs -----------------------------------------------------
+		using time_t = TimeT; 
+		using clock_t = ClockT; 
 		// construction - destruction -----------------------------------
 		benchmark() = default;
 		benchmark(benchmark const&) = delete;
