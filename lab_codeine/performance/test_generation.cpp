@@ -27,7 +27,7 @@ namespace
 		return ss.str();
 	}
 
-	// uniform_int_distribution
+	// Uniform distributions ----------------------------------------------------------------------
 	void test_uniform_int_distribution(std::vector<int>& v, int low, int high)
 	{
 		std::generate(v.begin(), v.end(),
@@ -37,7 +37,6 @@ namespace
 			distribution_header("uniform_int_distribution", std::to_string(v.size())).c_str());
 	}
 
-	// uniform_real_distribution
 	void test_uniform_real_distribution(std::vector<double>& v, int low, int high)
 	{
 		std::generate(v.begin(), v.end(),
@@ -47,7 +46,7 @@ namespace
 			distribution_header("uniform_real_distribution", std::to_string(v.size())).c_str());
 	}
 
-	// bernoulli_distribution
+	// Bernoulli distributions --------------------------------------------------------------------
 	void test_bernoulli_distribution(std::vector<int>& v, double p)
 	{
 		std::generate(v.begin(), v.end(),
@@ -57,7 +56,6 @@ namespace
 			distribution_header("bernoulli_distribution", std::to_string(v.size())).c_str());
 	}
 
-	// binomial_distribution
 	void test_binomial_distribution(std::vector<int>& v, int t, double p)
 	{
 		std::generate(v.begin(), v.end(),
@@ -67,7 +65,6 @@ namespace
 			distribution_header("binomial_distribution", std::to_string(v.size())).c_str());
 	}
 
-	// negative_binomial_distribution
 	void test_negative_binomial_distribution(std::vector<int>& v, int t, double p)
 	{
 		std::generate(v.begin(), v.end(),
@@ -77,7 +74,6 @@ namespace
 			distribution_header("negative_binomial_distribution", std::to_string(v.size())).c_str());
 	}
 
-	// geometric_distribution
 	void test_geometric_distribution(std::vector<int>& v, double p)
 	{
 		std::generate(v.begin(), v.end(),
@@ -87,7 +83,7 @@ namespace
 			distribution_header("geometric_distribution", std::to_string(v.size())).c_str());
 	}
 
-	// poisson_distribution
+	// Poisson distributions ----------------------------------------------------------------------
 	void test_poisson_distribution(std::vector<int>& v, double mean)
 	{
 		std::generate(v.begin(), v.end(),
@@ -97,7 +93,6 @@ namespace
 			distribution_header("poisson_distribution", std::to_string(v.size())).c_str());
 	}
 
-	// exponential_distribution: defined for T{ float, double, double }
 	void test_exponential_distribution(std::vector<double>& v, double lambda)
 	{
 		std::generate(v.begin(), v.end(),
@@ -107,7 +102,6 @@ namespace
 			distribution_header("exponential_distribution", std::to_string(v.size())).c_str());
 	}
 
-	// gamma_distribution: defined for T{ float, double, long double }
 	void test_gamma_distribution(std::vector<double>& v, double alpha, double beta)
 	{
 		std::generate(v.begin(), v.end(),
@@ -117,7 +111,6 @@ namespace
 			distribution_header("gamma_distribution", std::to_string(v.size())).c_str());
 	}
 
-	// weibull_distribution: defined for T{ float, double, long double }
 	void test_weibull_distribution(std::vector<double>& v, double shape, double scale)
 	{
 		std::generate(v.begin(), v.end(),
@@ -127,7 +120,6 @@ namespace
 			distribution_header("weibull_distribution", std::to_string(v.size())).c_str());
 	}
 
-	// extreme_value_distribution: defined for T{ float, double, long double }
 	void test_extreme_value_distribution(std::vector<double>& v, double location, double scale)
 	{
 		std::generate(v.begin(), v.end(),
@@ -137,7 +129,7 @@ namespace
 			distribution_header("extreme_value_distribution", std::to_string(v.size())).c_str());
 	}
 
-	// normal_distribution: defined for T{ float, double, long double }
+	// Normal distributions -----------------------------------------------------------------------
 	void test_normal_distribution(std::vector<double>& v, double mean, double stddev)
 	{
 		std::generate(v.begin(), v.end(),
@@ -147,16 +139,83 @@ namespace
 			distribution_header("normal_distribution", std::to_string(v.size())).c_str());
 	}
 
-	// lognormal_distribution
-	// chi_squared_distribution
-	// cauchy_distribution
-	// fisher_f_distribution
-	// student_t_distribution
-	// Sampling distributions
-	// discrete_distribution
-	// piecewise_constant_distribution
-	// piecewise_linear_distribution
+	void test_lognormal_distribution(std::vector<double>& v, double log_scale, double shape)
+	{
+		std::generate(v.begin(), v.end(),
+			dtset::random_generator<std::lognormal_distribution<>>(log_scale, shape));
 
+		serialize_distribution(v,
+			distribution_header("lognormal_distribution", std::to_string(v.size())).c_str());
+	}
+
+	void test_chi_squared_distribution(std::vector<double>& v, double d_f)
+	{
+		std::generate(v.begin(), v.end(),
+			dtset::random_generator<std::chi_squared_distribution<>>(d_f));
+
+		serialize_distribution(v,
+			distribution_header("chi_squared_distribution", std::to_string(v.size())).c_str());
+	}
+
+	void test_cauchy_distribution(std::vector<double>& v, double location, double scale)
+	{
+		std::generate(v.begin(), v.end(),
+			dtset::random_generator<std::cauchy_distribution<>>(location, scale));
+
+		serialize_distribution(v,
+			distribution_header("cauchy_distribution", std::to_string(v.size())).c_str());
+	}
+
+	void test_fisher_f_distribution(std::vector<double>& v, double m, double n)
+	{
+		std::generate(v.begin(), v.end(),
+			dtset::random_generator<std::fisher_f_distribution<>>(m, n));
+
+		serialize_distribution(v,
+			distribution_header("fisher_f_distribution", std::to_string(v.size())).c_str());
+	}
+
+	void test_student_t_distribution(std::vector<double>& v, double d_f)
+	{
+		std::generate(v.begin(), v.end(),
+			dtset::random_generator<std::student_t_distribution<>>(d_f));
+
+		serialize_distribution(v,
+			distribution_header("student_t_distribution", std::to_string(v.size())).c_str());
+	}
+
+	// Sampling distributions ---------------------------------------------------------------------
+	void test_discrete_distribution(std::vector<int>& v, std::initializer_list<double> weights)
+	{
+		std::generate(v.begin(), v.end(),
+			dtset::random_generator<std::discrete_distribution<int>>(weights));
+
+		serialize_distribution(v,
+			distribution_header("discrete_distribution", std::to_string(v.size())).c_str());
+	}
+
+	// piecewise_constant_distribution
+	void test_piecewise_constant_distribution(std::vector<double>& v)
+	{
+		std::generate(v.begin(), v.end(),
+			dtset::random_generator<std::piecewise_constant_distribution<>>());
+
+		serialize_distribution(v,
+			distribution_header("piecewise_constant_distribution", std::to_string(v.size())).c_str());
+	}
+
+	// piecewise_linear_distribution
+	void test_piecewise_linear_distribution(std::vector<double>& v)
+	{
+		std::vector<double> i{ 0, 5, 10, 15 };
+		std::vector<double> w{ 0, 1,   1, 0 };
+
+		std::generate(v.begin(), v.end(),
+			dtset::random_generator<std::piecewise_linear_distribution<>>(i.begin(), i.end(), w.begin()));
+
+		serialize_distribution(v,
+			distribution_header("piecewise_linear_distribution", std::to_string(v.size())).c_str());
+	}
 }
 
 void dtset::test_dataset_generator()
@@ -174,7 +233,15 @@ void dtset::test_dataset_generator()
 	//test_gamma_distribution(vd, 0.5, 1.5); 
 	//test_weibull_distribution(vd, 10.5, 1.5); 
 	//test_extreme_value_distribution(vd, 50, 1.6); 
-	test_normal_distribution(vd, 0, 50); 
+	//test_normal_distribution(vd, 0, 50);
+	//test_lognormal_distribution(vd, 1, 1);
+	//test_chi_squared_distribution(vd, 10);
+	//test_cauchy_distribution(vd, 0, 0.01);
+	//test_fisher_f_distribution(vd, 10, 10); 
+	//test_student_t_distribution(vd, 10); 
+	//test_discrete_distribution(vi, { 8, 7, 6, 5, 4, 3, 2, 1, 7.5, 8 }); 
+	//test_piecewise_constant_distribution(vd);
+	test_piecewise_linear_distribution(vd);
 }
 
 

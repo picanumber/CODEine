@@ -49,6 +49,9 @@ def print_data_stats(datalist, name):
     print("population variance          : {}".format(stat.pvariance(datalist)))
     print("sample standard deviation    : {}".format(stat.stdev(datalist)))
     print("sample variance              : {}".format(stat.variance(datalist)))
+    print("----------------------------------------------------- extends")
+    print("sample min: {}".format(min(datalist)))
+    print("sample max: {}".format(max(datalist)))
     print("=============================================================")
 # -----------------------------------------------------------------------   
 
@@ -186,7 +189,13 @@ def plot_histogram(distr_name, distr_data):
     """
     bins = np.arange(min(distr_data), max(distr_data) + 1, 10) # fixed bin size
 
-    plt.xlim([min(distr_data) - 5, max(distr_data) + 5])
+    min_d = min(distr_data)
+    max_d = max(distr_data)
+
+    ext = (max_d - min_d) / 100
+    ext = np.clip(ext, 0, 5)
+
+    plt.xlim([min_d - ext, max_d + ext])
     plt.hist(distr_data, alpha=0.5) #bins=bins, 
     plt.title(distr_name)
     plt.xlabel('generated numbers')
