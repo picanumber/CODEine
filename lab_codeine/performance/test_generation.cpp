@@ -6,12 +6,14 @@
 #include <iterator>
 #include <algorithm>
 
+#include "CODEine/benchmark.h"
+
 namespace 
 {
 	template <class T>
 	void serialize_distribution(std::vector<T> const& distribution_values, const char *distributionName)
 	{
-		std::ofstream out(std::string("datafiles/") + distributionName + std::string(".txt"));
+		std::ofstream out(std::string("datafiles/distributions/") + distributionName + std::string(".txt"));
 		out << "{ \"" << distributionName << "\": [";
 		for (auto val : distribution_values)
 		{
@@ -224,6 +226,7 @@ void dtset::test_dataset_generator()
 	std::vector<double> vd(100'000); 
 	
 	//test_uniform_int_distribution(vi, -100, 100); 
+	//test_uniform_real_distribution(vd, -100, 100); 
 	//test_bernoulli_distribution(vi, 0.25); 
 	//test_binomial_distribution(vi, 10, 0.25); 
 	//test_negative_binomial_distribution(vi, 10, 0.25); 
@@ -241,29 +244,5 @@ void dtset::test_dataset_generator()
 	//test_student_t_distribution(vd, 10); 
 	//test_discrete_distribution(vi, { 8, 7, 6, 5, 4, 3, 2, 1, 7.5, 8 }); 
 	//test_piecewise_constant_distribution(vd);
-	test_piecewise_linear_distribution(vd);
+	//test_piecewise_linear_distribution(vd);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

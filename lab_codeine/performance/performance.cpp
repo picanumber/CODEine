@@ -13,16 +13,17 @@
 
 int main()
 {
-	dtset::test_dataset_generator(); 
-	return 0; 
+	int dummy; 
+	std::cout << "waiting for you to set the t.a.\n"; 
+	std::cin >> dummy; 
 
 	bmk::benchmark<> bmark1, bmark2; 
 
-	//std::vector<int> ints; 
-	//dtset::dataset_from_file("datafiles/ints.txt", ints, 5'000'000); 
-	//std::cout << "acquired " << ints.size() << " integers\n"; 
-	//ptest::cs_vector_unique<10, 10>(ints, "sort & unique", "set & copy", bmark1); 
-	//bmark1.serialize("unique a vector of ints", "results/vector_unique_ints.txt"); 
+	std::vector<unsigned long long> ints; 
+	dtset::dataset_from_file("datafiles/ull_ints.txt", ints, 5'000'000); 
+	std::cout << "acquired " << ints.size() << " integers\n"; 
+	ptest::cs_vector_unique<10, 10>(ints, bmark1); 
+	bmark1.serialize("unique a vector of unsigned ints", "results/vector_unique_ull_ints.txt"); 
 
 	std::vector<std::string> words;
 	dtset::dataset_from_file("datafiles/text.txt", words, 5'000'000);

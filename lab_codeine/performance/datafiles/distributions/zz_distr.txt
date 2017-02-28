@@ -1,0 +1,360 @@
+=============================================================
+        binomial_distribution - 100000 numbers
+--------------------- averages & measures of central location
+mean (average)          : 2.495
+median (middle value)   : 2.0
+median_low              : 2
+median_high             : 2
+median_grouped          : 2.403
+mode (most common value): 2
+------------------------------------------ measures of spread
+population standard deviation: 1.371
+population variance          : 1.879
+sample standard deviation    : 1.371
+sample variance              : 1.879
+----------------------------------------------------- extends
+sample min: 0
+sample max: 9
+=============================================================
+=============================================================
+        exponential_distribution - 100000 numbers
+--------------------- averages & measures of central location
+mean (average)          : 0.997
+median (middle value)   : 0.69
+median_low              : 0.69
+median_high             : 0.69
+median_grouped          : 0.19
+mode (most common value): 1.072
+------------------------------------------ measures of spread
+population standard deviation: 0.997
+population variance          : 0.994
+sample standard deviation    : 0.997
+sample variance              : 0.994
+----------------------------------------------------- extends
+sample min: 0.0
+sample max: 10.867
+=============================================================
+=============================================================
+        negative_binomial_distribution - 100000 numbers
+--------------------- averages & measures of central location
+mean (average)          : 29.946
+median (middle value)   : 29.0
+median_low              : 29
+median_high             : 29
+median_grouped          : 28.752
+mode (most common value): 25
+------------------------------------------ measures of spread
+population standard deviation: 10.942
+population variance          : 119.72
+sample standard deviation    : 10.942
+sample variance              : 119.721
+----------------------------------------------------- extends
+sample min: 2
+sample max: 98
+=============================================================
+=============================================================
+        negative_binomial_distribution - 100000 numbers
+--------------------- averages & measures of central location
+mean (average)          : 29.946
+median (middle value)   : 29.0
+median_low              : 29
+median_high             : 29
+median_grouped          : 28.752
+mode (most common value): 25
+------------------------------------------ measures of spread
+population standard deviation: 10.942
+population variance          : 119.72
+sample standard deviation    : 10.942
+sample variance              : 119.721
+----------------------------------------------------- extends
+sample min: 2
+sample max: 98
+=============================================================
+=============================================================
+        uniform_int_distribution - 100000 numbers
+--------------------- averages & measures of central location
+mean (average)          : -0.061
+median (middle value)   : 0.0
+median_low              : 0
+median_high             : 0
+median_grouped          : -0.115
+mode (most common value): -72
+------------------------------------------ measures of spread
+population standard deviation: 57.807
+population variance          : 3341.655
+sample standard deviation    : 57.807
+sample variance              : 3341.688
+----------------------------------------------------- extends
+sample min: -100
+sample max: 100
+=============================================================
+=============================================================
+        uniform_real_distribution - 100000 numbers
+--------------------- averages & measures of central location
+mean (average)          : -0.195
+median (middle value)   : -0.359
+median_low              : -0.362
+median_high             : -0.356
+median_grouped          : -0.856
+mode: no unique mode; found 32 equally common values
+------------------------------------------ measures of spread
+population standard deviation: 57.677
+population variance          : 3326.612
+sample standard deviation    : 57.677
+sample variance              : 3326.646
+----------------------------------------------------- extends
+sample min: -100.0
+sample max: 99.996
+=============================================================
+=============================================================
+        gamma_distribution - 100000 numbers
+--------------------- averages & measures of central location
+mean (average)          : 0.746
+median (middle value)   : 0.341
+median_low              : 0.341
+median_high             : 0.341
+median_grouped          : -0.159
+mode (most common value): 1.164
+------------------------------------------ measures of spread
+population standard deviation: 1.05
+population variance          : 1.103
+sample standard deviation    : 1.05
+sample variance              : 1.103
+----------------------------------------------------- extends
+sample min: 0.0
+sample max: 13.977
+=============================================================
+=============================================================
+        poisson_distribution - 100000 numbers
+--------------------- averages & measures of central location
+mean (average)          : 10.023
+median (middle value)   : 10.0
+median_low              : 10
+median_high             : 10
+median_grouped          : 9.859
+mode (most common value): 10
+------------------------------------------ measures of spread
+population standard deviation: 3.169
+population variance          : 10.042
+sample standard deviation    : 3.169
+sample variance              : 10.042
+----------------------------------------------------- extends
+sample min: 0
+sample max: 28
+=============================================================
+=============================================================
+        geometric_distribution - 100000 numbers
+--------------------- averages & measures of central location
+mean (average)          : 0.111
+median (middle value)   : 0.0
+median_low              : 0
+median_high             : 0
+median_grouped          : 0.056
+mode (most common value): 0
+------------------------------------------ measures of spread
+population standard deviation: 0.353
+population variance          : 0.124
+sample standard deviation    : 0.353
+sample variance              : 0.124
+----------------------------------------------------- extends
+sample min: 0
+sample max: 6
+=============================================================
+=============================================================
+        weibull_distribution - 100000 numbers
+--------------------- averages & measures of central location
+mean (average)          : 1.429
+median (middle value)   : 1.448
+median_low              : 1.448
+median_high             : 1.448
+median_grouped          : 0.948
+mode: no unique mode; found 2 equally common values
+------------------------------------------ measures of spread
+population standard deviation: 0.164
+population variance          : 0.027
+sample standard deviation    : 0.164
+sample variance              : 0.027
+----------------------------------------------------- extends
+sample min: 0.388
+sample max: 1.883
+=============================================================
+=============================================================
+        extreme_value_distribution - 100000 numbers
+--------------------- averages & measures of central location
+mean (average)          : 50.917
+median (middle value)   : 50.578
+median_low              : 50.578
+median_high             : 50.578
+median_grouped          : 50.078
+mode (most common value): 49.468
+------------------------------------------ measures of spread
+population standard deviation: 2.048
+population variance          : 4.194
+sample standard deviation    : 2.048
+sample variance              : 4.194
+----------------------------------------------------- extends
+sample min: 45.754
+sample max: 67.388
+=============================================================
+=============================================================
+        normal_distribution - 100000 numbers
+--------------------- averages & measures of central location
+mean (average)          : -0.069
+median (middle value)   : -0.104
+median_low              : -0.104
+median_high             : -0.103
+median_grouped          : -0.603
+mode: no unique mode; found 2 equally common values
+------------------------------------------ measures of spread
+population standard deviation: 49.987
+population variance          : 2498.722
+sample standard deviation    : 49.987
+sample variance              : 2498.747
+----------------------------------------------------- extends
+sample min: -216.877
+sample max: 224.464
+=============================================================
+=============================================================
+        lognormal_distribution - 100000 numbers
+--------------------- averages & measures of central location
+mean (average)          : 4.505
+median (middle value)   : 2.727
+median_low              : 2.727
+median_high             : 2.727
+median_grouped          : 2.227
+mode (most common value): 1.503
+------------------------------------------ measures of spread
+population standard deviation: 5.968
+population variance          : 35.614
+sample standard deviation    : 5.968
+sample variance              : 35.615
+----------------------------------------------------- extends
+sample min: 0.046
+sample max: 199.219
+=============================================================
+=============================================================
+        chi_squared_distribution - 100000 numbers
+--------------------- averages & measures of central location
+mean (average)          : 9.992
+median (middle value)   : 9.337
+median_low              : 9.337
+median_high             : 9.337
+median_grouped          : 8.837
+mode (most common value): 10.601
+------------------------------------------ measures of spread
+population standard deviation: 4.481
+population variance          : 20.083
+sample standard deviation    : 4.481
+sample variance              : 20.083
+----------------------------------------------------- extends
+sample min: 0.478
+sample max: 40.087
+=============================================================
+=============================================================
+        cauchy_distribution - 100000 numbers
+--------------------- averages & measures of central location
+mean (average)          : -0.048
+median (middle value)   : -0.0
+median_low              : -0.0
+median_high             : -0.0
+median_grouped          : -0.5
+mode: no unique mode; found 5 equally common values
+------------------------------------------ measures of spread
+population standard deviation: 14.902
+population variance          : 222.066
+sample standard deviation    : 14.902
+sample variance              : 222.068
+----------------------------------------------------- extends
+sample min: -4701.69
+sample max: 166.919
+=============================================================
+=============================================================
+        fisher_f_distribution - 100000 numbers
+--------------------- averages & measures of central location
+mean (average)          : 1.252
+median (middle value)   : 0.998
+median_low              : 0.998
+median_high             : 0.998
+median_grouped          : 0.498
+mode (most common value): 1.133
+------------------------------------------ measures of spread
+population standard deviation: 0.976
+population variance          : 0.953
+sample standard deviation    : 0.976
+sample variance              : 0.953
+----------------------------------------------------- extends
+sample min: 0.039
+sample max: 34.579
+=============================================================
+=============================================================
+        student_t_distribution - 100000 numbers
+--------------------- averages & measures of central location
+mean (average)          : 0.006
+median (middle value)   : 0.003
+median_low              : 0.003
+median_high             : 0.003
+median_grouped          : -0.497
+mode: no unique mode; found 5 equally common values
+------------------------------------------ measures of spread
+population standard deviation: 1.115
+population variance          : 1.243
+sample standard deviation    : 1.115
+sample variance              : 1.243
+----------------------------------------------------- extends
+sample min: -6.717
+sample max: 7.492
+=============================================================
+=============================================================
+        discrete_distribution - 100000 numbers
+--------------------- averages & measures of central location
+mean (average)          : 4.183
+median (middle value)   : 3.0
+median_low              : 3
+median_high             : 3
+median_grouped          : 3.432
+mode (most common value): 0
+------------------------------------------ measures of spread
+population standard deviation: 3.288
+population variance          : 10.808
+sample standard deviation    : 3.288
+sample variance              : 10.808
+----------------------------------------------------- extends
+sample min: 0
+sample max: 9
+=============================================================
+=============================================================
+        piecewise_constant_distribution - 100000 numbers
+--------------------- averages & measures of central location
+mean (average)          : 0.5
+median (middle value)   : 0.499
+median_low              : 0.499
+median_high             : 0.499
+median_grouped          : -0.001
+mode: no unique mode; found 5 equally common values
+------------------------------------------ measures of spread
+population standard deviation: 0.289
+population variance          : 0.084
+sample standard deviation    : 0.289
+sample variance              : 0.084
+----------------------------------------------------- extends
+sample min: 0.0
+sample max: 1.0
+=============================================================
+=============================================================
+        piecewise_linear_distribution - 100000 numbers
+--------------------- averages & measures of central location
+mean (average)          : 7.51
+median (middle value)   : 7.515
+median_low              : 7.515
+median_high             : 7.516
+median_grouped          : 7.016
+mode: no unique mode; found 4 equally common values
+------------------------------------------ measures of spread
+population standard deviation: 3.222
+population variance          : 10.381
+sample standard deviation    : 3.222
+sample variance              : 10.381
+----------------------------------------------------- extends
+sample min: 0.021
+sample max: 14.978
+=============================================================

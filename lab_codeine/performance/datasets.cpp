@@ -10,11 +10,12 @@ std::size_t dtset::dataset_from_file(
 	std::size_t ret = words.size(); 
 	std::ifstream file(filename, std::ios::in);	
 
-#if 0
+#if 1
 	if (file.is_open())
 	{
 		std::string word;
-		while (file >> word)
+		words.reserve(words.size() + limit);
+		while (file >> word && limit--)
 		{
 			words.push_back(word);
 		}

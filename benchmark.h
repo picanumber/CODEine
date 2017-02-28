@@ -35,8 +35,8 @@ namespace bmk
 	using std::result_of_t;
 	using std::make_unique;
 	using std::initializer_list;
-	using std::remove_reference;
 	using std::integral_constant;
+	using std::remove_reference_t;
 	using std::chrono::time_point;
 	using std::chrono::duration_cast;
 
@@ -57,14 +57,31 @@ namespace bmk
 	}
 #endif
 
+	enum class central_location { mean, median, mode, min, none };
+
 	/// calculate the mean value
 	template <typename C>
 	auto mean(C&& data)
 	{
 		return std::accumulate(
 		           begin(data), end(data),
-		           (std::remove_reference_t<decltype(*begin(data))>) 0) /
+		           (remove_reference_t<decltype(*begin(data))>) 0) /
 		       data.size();
+	}
+
+	template <class T>
+	auto median(std::vector<T> const& v)
+	{
+		bool isEven = !(v.size() % 2);
+		std::size_t n = v.size() / 2;
+
+		std::vector<size_t> vi(v.size());
+		std::iota(vi.begin(), vi.end(), 0);
+
+		std::partial_sort(vi.begin(), vi.begin() + n + 1, vi.end(),
+			[&](size_t lhs, size_t rhs) { return v[lhs] < v[rhs]; });
+
+		return isEven ? 0.5 * (v[vi.at(n - 1)] + v[vi.at(n)]) : v[vi.at(n)];
 	}
 
 	namespace detail
@@ -180,11 +197,44 @@ namespace bmk
 
 	namespace detail
 	{
+		template <central_location CL>
+		struct measure_cl; 
+
+		template <>
+		struct measure_cl<central_location::mean>
+		{
+			template <typename C>
+			static auto apply(C&& input)
+			{
+				return mean(fw(input)); 
+			}
+		};
+
+		template <>
+		struct measure_cl<central_location::median>
+		{
+			template <typename C>
+			static auto apply(C&& input)
+			{
+				return median(fw(input));
+			}
+		};
+
+		template <>
+		struct measure_cl<central_location::min>
+		{
+			template <typename C>
+			static auto apply(C&& input)
+			{
+				return *std::min_element(std::begin(fw(input)), std::end(fw(input)));
+			}
+		};
+
 		/**
 		* @ class experiment_impl
 		* @ brief implementation details of an experiment
 		*/
-		template <class TimeT, class FactorT>
+		template <class TimeT, class FactorT, central_location CL>
 		struct experiment_impl
 		{
 			string _fctName;
@@ -213,7 +263,7 @@ namespace bmk
 				for (auto&& Pair : _timings)
 				{
 					os << token;
-					os << mean(Pair.second).count();
+					os << measure_cl<CL>::apply(Pair.second).count();
 					token = ", ";
 				}
 				os << " ]";
@@ -223,8 +273,8 @@ namespace bmk
 			~experiment_impl() = default;
 		};
 
-		template <class TimeT>
-		struct experiment_impl<TimeT, void>
+		template <class TimeT, central_location CL>
+		struct experiment_impl<TimeT, void, CL>
 		{
 			vector<TimeT> _timings;
 
@@ -317,9 +367,14 @@ namespace bmk
 		* @ class experiment_model
 		* @ brief abrastraction for a single sampling process
 		*/
-		template <class TimeT, class ClockT, class FactorT = void>
+		template <
+			class TimeT, 
+			class ClockT, 
+			central_location CL, 
+			class FactorT = void
+		>
 		struct experiment_model final : experiment,
-		                                experiment_impl<TimeT, FactorT>
+		                                experiment_impl<TimeT, FactorT, CL>
 		{
 			ccleaner cache_cleaner; 
 
@@ -365,17 +420,17 @@ namespace bmk
 			experiment_model(size_t nSample, F&& callable,
 			                 string const& factorName, It beg, It fin)
 			    : experiment_impl<
-			          TimeT, typename remove_reference<decltype(*beg)>::type>(
+			          TimeT, remove_reference_t<decltype(*beg)>, CL>(
 			          factorName)
 			{
 				while (beg != fin)
 				{
-					experiment_impl<TimeT, FactorT>::_timings[*beg].reserve(nSample);
+					experiment_impl<TimeT, FactorT, CL>::_timings[*beg].reserve(nSample);
 					for (size_t i = 0; i < nSample; i++)
 					{
 						cache_cleaner();
 					
-						experiment_impl<TimeT, FactorT>::_timings[*beg]
+						experiment_impl<TimeT, FactorT, CL>::_timings[*beg]
 						    .push_back(measure<TimeT, ClockT>::duration(
 						        fw(callable), *beg));
 
@@ -388,7 +443,7 @@ namespace bmk
 			// forwarded functions --------------------------------------
 			void print(ostream& os) const override
 			{
-				experiment_impl<TimeT, FactorT>::print(os);
+				experiment_impl<TimeT, FactorT, CL>::print(os);
 			}
 		};
 	} // ~ namespace detail
@@ -397,8 +452,11 @@ namespace bmk
 	* @ class benchmark
 	* @ brief organizes the execution and serialization of timing experiments
 	*/
-	template <class TimeT  = std::chrono::milliseconds,
-	          class ClockT = std::chrono::steady_clock>
+	template <
+		class TimeT  = std::chrono::milliseconds,
+		class ClockT = std::chrono::steady_clock,
+		central_location CL = central_location::min
+	>
 	class benchmark
 	{
 		vector<pair<string, unique_ptr<detail::experiment>>> _data;
@@ -426,7 +484,7 @@ namespace bmk
 		{
 			_data.emplace_back(
 			    name,
-			    make_unique<detail::experiment_model<TimeT, ClockT, FactorT>>(
+			    make_unique<detail::experiment_model<TimeT, ClockT, FactorT, CL>>(
 			        nSample, fw(callable), factorName,
 			        forward<initializer_list<FactorT>&&>(factors)));
 		}
@@ -437,8 +495,8 @@ namespace bmk
 		{
 			_data.emplace_back(
 			    name, make_unique<detail::experiment_model<
-			              TimeT, ClockT,
-			              typename remove_reference<decltype(*beg)>::type>>(
+			              TimeT, ClockT, CL,
+			              remove_reference_t<decltype(*beg)>>>(
 			              nSample, fw(callable), factorName, beg, fin));
 		}
 
