@@ -1,0 +1,1 @@
+{ 'benchmark_name' : 'insert to the front of a sequence', 'experiment_name' : 'insert to the front of a vector', 'time_type' : 'milliseconds', 'factor_name' : 'elements', 'factors' : [ 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000 ], 'timings' : [ 0, 0, 0, 1, 1, 1, 2, 4, 2, 2 ] } 

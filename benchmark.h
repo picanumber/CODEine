@@ -455,7 +455,7 @@ namespace bmk
 	template <
 		class TimeT  = std::chrono::milliseconds,
 		class ClockT = std::chrono::steady_clock,
-		central_location CL = central_location::min
+		central_location CL = central_location::median
 	>
 	class benchmark
 	{
@@ -465,6 +465,7 @@ namespace bmk
 		// typedefs -----------------------------------------------------
 		using time_t = TimeT; 
 		using clock_t = ClockT; 
+		using timeout_t = timeout<time_t, clock_t>;
 		// construction - destruction -----------------------------------
 		benchmark() = default;
 		benchmark(benchmark const&) = delete;
